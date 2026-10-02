@@ -1,0 +1,793 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Minhas Tarefas</title>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --bg: #dde1ee;
+      --surface: #ffffff;
+      --surface-2: #f4f5fb;
+      --border: #b8c0d8;
+      --text: #1a1f36;
+      --text-muted: #8492a6;
+      --accent: #6c63ff;
+      --accent-light: #ede9ff;
+      --accent-hover: #5a52e0;
+      --success: #22c55e;
+      --success-light: #dcfce7;
+      --warn: #f59e0b;
+      --warn-light: #fef3c7;
+      --danger: #ef4444;
+      --danger-light: #fee2e2;
+      --shadow: 0 4px 24px rgba(108,99,255,.08);
+      --shadow-sm: 0 2px 8px rgba(0,0,0,.06);
+      --radius: 16px;
+      --radius-sm: 10px;
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      background: var(--bg);
+      color: var(--text);
+      font-family: 'Inter', sans-serif;
+      min-height: 100vh;
+      padding: 40px 16px 80px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+    }
+
+    /* ── HEADER ── */
+    .app-header {
+      width: 100%;
+      max-width: 680px;
+      margin-bottom: 28px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+
+    .app-title {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .app-title .icon {
+      width: 44px;
+      height: 44px;
+      background: var(--accent);
+      border-radius: 12px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 22px;
+      box-shadow: 0 4px 14px rgba(108,99,255,.35);
+    }
+
+    .app-title h1 {
+      font-size: 22px;
+      font-weight: 700;
+      color: var(--text);
+      letter-spacing: -.3px;
+    }
+
+    .app-title p {
+      font-size: 13px;
+      color: var(--text-muted);
+      margin-top: 2px;
+    }
+
+    .stats-pill {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 50px;
+      padding: 8px 16px;
+      font-size: 13px;
+      font-weight: 500;
+      color: var(--text-muted);
+      box-shadow: var(--shadow-sm);
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .stats-pill b { color: var(--accent); }
+
+    /* ── CARD ── */
+    .card {
+      width: 100%;
+      max-width: 680px;
+      background: var(--surface);
+      border-radius: var(--radius);
+      box-shadow: var(--shadow);
+      border: 1px solid var(--border);
+      margin-bottom: 20px;
+      overflow: hidden;
+    }
+
+    .card-header {
+      padding: 18px 24px 14px;
+      border-bottom: 1px solid var(--border);
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      font-size: 13px;
+      font-weight: 600;
+      color: var(--text-muted);
+      text-transform: uppercase;
+      letter-spacing: .06em;
+    }
+
+    .card-header .dot-header {
+      width: 8px; height: 8px;
+      border-radius: 50%;
+      background: var(--accent);
+    }
+
+    /* ── FORM ── */
+    .form-body { padding: 20px 24px 24px; }
+
+    .form-grid {
+      display: grid;
+      grid-template-columns: 1fr 180px 160px;
+      gap: 12px;
+      margin-bottom: 14px;
+    }
+
+    .field-group { display: flex; flex-direction: column; gap: 6px; }
+
+    .field-group label {
+      font-size: 12px;
+      font-weight: 600;
+      color: var(--text-muted);
+      text-transform: uppercase;
+      letter-spacing: .05em;
+    }
+
+    .field-group input,
+    .field-group select {
+      height: 42px;
+      background: var(--surface-2);
+      border: 1.5px solid var(--border);
+      border-radius: var(--radius-sm);
+      color: var(--text);
+      font-family: 'Inter', sans-serif;
+      font-size: 14px;
+      padding: 0 14px;
+      outline: none;
+      transition: border-color .2s, box-shadow .2s;
+    }
+
+    .field-group input:focus,
+    .field-group select:focus {
+      border-color: var(--accent);
+      box-shadow: 0 0 0 3px rgba(108,99,255,.12);
+    }
+
+    .btn-add {
+      width: 100%;
+      height: 46px;
+      background: var(--accent);
+      border: none;
+      border-radius: var(--radius-sm);
+      color: #fff;
+      font-family: 'Inter', sans-serif;
+      font-size: 14px;
+      font-weight: 600;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      transition: background .2s, transform .15s, box-shadow .2s;
+      box-shadow: 0 4px 14px rgba(108,99,255,.3);
+    }
+
+    .btn-add:hover {
+      background: var(--accent-hover);
+      transform: translateY(-1px);
+      box-shadow: 0 6px 18px rgba(108,99,255,.38);
+    }
+
+    .btn-add:active { transform: translateY(0); }
+    .btn-add:disabled { opacity: .5; cursor: default; transform: none; box-shadow: none; }
+
+    /* ── FILTERS ── */
+    .filters {
+      width: 100%;
+      max-width: 680px;
+      display: flex;
+      gap: 8px;
+      margin-bottom: 16px;
+      flex-wrap: wrap;
+    }
+
+    .filter-btn {
+      background: var(--surface);
+      border: 1.5px solid var(--border);
+      border-radius: 50px;
+      padding: 6px 16px;
+      font-family: 'Inter', sans-serif;
+      font-size: 12px;
+      font-weight: 600;
+      color: var(--text-muted);
+      cursor: pointer;
+      transition: all .2s;
+    }
+
+    .filter-btn:hover { border-color: var(--accent); color: var(--accent); }
+    .filter-btn.active { background: var(--accent); border-color: var(--accent); color: #fff; }
+
+    /* ── LIST ── */
+    .list-body { padding: 8px 0; }
+
+    .task-item {
+      display: flex;
+      align-items: center;
+      gap: 14px;
+      padding: 14px 24px;
+      transition: background .15s;
+      animation: slideIn .25s ease;
+    }
+
+    @keyframes slideIn {
+      from { opacity: 0; transform: translateY(-6px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+
+    .task-item:hover { background: var(--surface-2); }
+    .task-item + .task-item { border-top: 1px solid var(--border); }
+
+    .task-item.concluida { opacity: .6; background: transparent; border-left: none; }
+    .task-item.concluida:hover { background: var(--surface-2); }
+    .task-item.concluida .task-title { text-decoration: line-through; color: var(--text-muted); }
+    .task-item.concluida .pri-dot { display: none; }
+    .check-icon {
+      width: 22px; height: 22px; border-radius: 50%;
+      background: var(--success);
+      display: none; align-items: center; justify-content: center;
+      flex-shrink: 0;
+    }
+    .check-icon svg { width: 12px; height: 12px; }
+    .task-item.concluida .check-icon { display: flex; }
+    .badge-concluida {
+      font-size: 11px; font-weight: 700;
+      padding: 3px 10px; border-radius: 50px;
+      background: var(--success-light); color: var(--success);
+      border: 1.5px solid var(--success);
+    }
+
+    /* prioridade dot */
+    .pri-dot {
+      width: 12px; height: 12px;
+      border-radius: 50%;
+      flex-shrink: 0;
+    }
+    .pri-dot.Alta  { background: var(--danger);  box-shadow: 0 0 8px rgba(239,68,68,.5); }
+    .pri-dot.Media { background: var(--warn);    box-shadow: 0 0 8px rgba(245,158,11,.5); }
+    .pri-dot.Baixa { background: var(--success); box-shadow: 0 0 8px rgba(34,197,94,.5); }
+
+    .task-title {
+      flex: 1;
+      font-size: 14px;
+      font-weight: 500;
+      color: var(--text);
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    .task-prazo {
+      font-size: 12px;
+      color: var(--text-muted);
+      display: flex;
+      align-items: center;
+      gap: 4px;
+      min-width: 90px;
+    }
+
+    .badge {
+      font-size: 11px;
+      font-weight: 700;
+      padding: 3px 10px;
+      border-radius: 50px;
+      min-width: 52px;
+      text-align: center;
+    }
+    .badge.Alta  { background: var(--danger-light);  color: var(--danger); }
+    .badge.Media { background: var(--warn-light);    color: var(--warn); }
+    .badge.Baixa { background: var(--success-light); color: var(--success); }
+
+    .task-actions { display: flex; gap: 6px; }
+
+    .btn-sm {
+      height: 32px;
+      padding: 0 12px;
+      border-radius: 8px;
+      border: 1.5px solid var(--border);
+      background: transparent;
+      font-family: 'Inter', sans-serif;
+      font-size: 12px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all .18s;
+      white-space: nowrap;
+      color: var(--text);
+    }
+
+    .btn-sm.concluir { border-color: var(--success); color: var(--success); }
+    .btn-sm.concluir:hover { background: var(--success); color: #fff; }
+
+    .btn-sm.editar { border-color: var(--accent); color: var(--accent); }
+    .btn-sm.editar:hover { background: var(--accent); color: #fff; }
+
+    .btn-sm.excluir { border-color: var(--danger); color: var(--danger); }
+    .btn-sm.excluir:hover { background: var(--danger); color: #fff; }
+
+    .btn-sm:disabled { opacity: .3; cursor: default; }
+
+    /* ── EDIT INLINE ── */
+    .edit-row {
+      padding: 12px 24px 16px;
+      background: var(--accent-light);
+      border-top: 1px solid var(--border);
+      display: flex;
+      gap: 10px;
+      align-items: center;
+      flex-wrap: wrap;
+      animation: slideIn .2s ease;
+    }
+
+    .edit-row input,
+    .edit-row select {
+      height: 36px;
+      background: #fff;
+      border: 1.5px solid var(--border);
+      border-radius: 8px;
+      color: var(--text);
+      font-family: 'Inter', sans-serif;
+      font-size: 13px;
+      padding: 0 10px;
+      outline: none;
+      transition: border-color .2s;
+    }
+    .edit-row input:focus,
+    .edit-row select:focus { border-color: var(--accent); }
+    .edit-row input.inp-titulo { flex: 1; min-width: 160px; }
+    .edit-row input.inp-prazo  { width: 140px; }
+    .edit-row select            { width: 110px; }
+
+    .btn-salvar {
+      height: 36px; padding: 0 16px;
+      background: var(--accent); border: none;
+      border-radius: 8px; color: #fff;
+      font-family: 'Inter', sans-serif;
+      font-size: 12px; font-weight: 600;
+      cursor: pointer; transition: background .2s;
+    }
+    .btn-salvar:hover { background: var(--accent-hover); }
+    .btn-cancelar {
+      height: 36px; padding: 0 14px;
+      background: transparent;
+      border: 1.5px solid var(--border);
+      border-radius: 8px; color: var(--text-muted);
+      font-family: 'Inter', sans-serif;
+      font-size: 12px; font-weight: 600;
+      cursor: pointer; transition: all .2s;
+    }
+    .btn-cancelar:hover { border-color: var(--danger); color: var(--danger); }
+
+    .btn-sm:disabled { opacity: .3; cursor: default; }
+
+    .task-item.vencida:not(.concluida) { background: #fff5f5; border-left: 3px solid var(--danger); }
+    .task-item.vencida:not(.concluida):hover { background: #fee8e8; }
+    .prazo-vencido {
+      display: inline-flex; align-items: center; gap: 4px;
+      background: var(--danger-light); color: var(--danger);
+      font-size: 11px; font-weight: 700;
+      padding: 2px 8px; border-radius: 50px;
+    }
+
+    /* ── EMPTY ── */
+    .empty {
+      padding: 48px 24px;
+      text-align: center;
+    }
+
+    .empty-icon { font-size: 40px; margin-bottom: 12px; }
+
+    .empty h3 {
+      font-size: 15px;
+      font-weight: 600;
+      color: var(--text);
+      margin-bottom: 6px;
+    }
+
+    .empty p { font-size: 13px; color: var(--text-muted); }
+
+    /* ── FOOTER ── */
+    .card-footer {
+      padding: 14px 24px;
+      border-top: 1px solid var(--border);
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      font-size: 12px;
+      color: var(--text-muted);
+      background: var(--surface-2);
+    }
+
+    .progress-bar {
+      width: 120px;
+      height: 6px;
+      background: var(--border);
+      border-radius: 99px;
+      overflow: hidden;
+    }
+
+    .progress-fill {
+      height: 100%;
+      background: linear-gradient(90deg, var(--accent), var(--success));
+      border-radius: 99px;
+      transition: width .4s ease;
+    }
+
+    /* ── TOAST ── */
+    #toast {
+      position: fixed;
+      bottom: 28px;
+      left: 50%;
+      transform: translateX(-50%) translateY(16px);
+      background: var(--text);
+      color: #fff;
+      font-family: 'Inter', sans-serif;
+      font-size: 13px;
+      font-weight: 500;
+      padding: 12px 22px;
+      border-radius: 50px;
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity .25s, transform .25s;
+      z-index: 999;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      box-shadow: 0 8px 24px rgba(0,0,0,.18);
+      white-space: nowrap;
+    }
+
+    #toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
+    #toast.ok   { background: #1a1f36; }
+    #toast.err  { background: var(--danger); }
+
+    @media (max-width: 600px) {
+      .form-grid { grid-template-columns: 1fr; }
+      .app-header { flex-direction: column; align-items: flex-start; gap: 12px; }
+    }
+  </style>
+</head>
+<body>
+
+<!-- HEADER -->
+<div class="app-header">
+  <div class="app-title">
+    <div class="icon">
+      <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <path d="M5 13l4 4L19 7" stroke="white" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/>
+      </svg>
+    </div>
+    <div>
+      <h1>Minhas Tarefas</h1>
+      <p>Organize seu dia com eficiência</p>
+    </div>
+  </div>
+    <div class="stats-pill">
+      <b id="count-total">0</b> tarefas
+    </div>
+</div>
+
+<!-- FORM -->
+<div class="card">
+  <div class="card-header">
+    <span class="dot-header"></span>
+    Nova Tarefa
+  </div>
+  <div class="form-body">
+    <div class="form-grid">
+      <div class="field-group">
+        <label>Tarefa</label>
+        <input id="inp-titulo" type="text" placeholder="Ex: Estudar para a prova...">
+      </div>
+      <div class="field-group">
+        <label>Prazo</label>
+        <input id="inp-prazo" type="date">
+      </div>
+      <div class="field-group">
+        <label>Prioridade</label>
+        <select id="inp-prior">
+          <option value="Alta">Alta</option>
+          <option value="Media" selected>Média</option>
+          <option value="Baixa">Baixa</option>
+        </select>
+      </div>
+    </div>
+    <button class="btn-add" id="btn-add">
+      <span>+</span> Adicionar Tarefa
+    </button>
+  </div>
+</div>
+
+<!-- FILTERS -->
+<div class="filters">
+  <button class="filter-btn active" data-filter="todas">Todas</button>
+  <button class="filter-btn" data-filter="pendentes">Pendentes</button>
+  <button class="filter-btn" data-filter="vencidas">Vencidas</button>
+  <button class="filter-btn" data-filter="concluidas">Concluídas</button>
+  <button class="filter-btn" data-filter="Alta">🔴 Alta</button>
+  <button class="filter-btn" data-filter="Media">🟡 Média</button>
+  <button class="filter-btn" data-filter="Baixa">🟢 Baixa</button>
+</div>
+
+<!-- LIST -->
+<div class="card">
+  <div class="card-header">
+    <span class="dot-header"></span>
+    Lista de Tarefas
+  </div>
+  <div class="list-body" id="lista"></div>
+  <div class="card-footer">
+    <span id="status-label">0 tarefas</span>
+    <div style="display:flex;align-items:center;gap:10px;">
+      <span id="status-pct" style="font-size:12px;color:var(--text-muted)">0% concluído</span>
+      <div class="progress-bar">
+        <div class="progress-fill" id="progress" style="width:0%"></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div id="toast"></div>
+
+<script>
+  const API = '';
+  let todasTarefas = [];
+  let filtroAtivo = 'todas';
+
+  const lista      = document.getElementById('lista');
+  const btnAdd     = document.getElementById('btn-add');
+  const inpTitulo  = document.getElementById('inp-titulo');
+  const inpPrazo   = document.getElementById('inp-prazo');
+  const inpPrior   = document.getElementById('inp-prior');
+  const toastEl    = document.getElementById('toast');
+  const countTotal = document.getElementById('count-total');
+  const statusLbl  = document.getElementById('status-label');
+  const statusPct  = document.getElementById('status-pct');
+  const progressEl = document.getElementById('progress');
+
+  // Filtros
+  document.querySelectorAll('.filter-btn').forEach(btn => {
+    btn.addEventListener('click', () => {
+      document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
+      btn.classList.add('active');
+      filtroAtivo = btn.dataset.filter;
+      renderTarefas();
+    });
+  });
+
+  let toastTimer = null;
+  function toast(msg, tipo = 'ok') {
+    const emoji = tipo === 'ok' ? '✓' : '✕';
+    toastEl.innerHTML = `<span>${emoji}</span> ${msg}`;
+    toastEl.className = 'show ' + tipo;
+    clearTimeout(toastTimer);
+    toastTimer = setTimeout(() => toastEl.className = '', 2400);
+  }
+
+  function formatarPrazo(prazo) {
+    if (!prazo) return null;
+    const [y, m, d] = prazo.split('-');
+    return `${d}/${m}/${y}`;
+  }
+
+  function prazoVencido(prazo) {
+    if (!prazo) return false;
+    return new Date(prazo) < new Date(new Date().toDateString());
+  }
+
+  function filtrar(tarefas) {
+    switch (filtroAtivo) {
+      case 'pendentes':  return tarefas.filter(t => !t.concluida && !prazoVencido(t.prazo));
+      case 'vencidas':   return tarefas.filter(t => !t.concluida && prazoVencido(t.prazo));
+      case 'concluidas': return tarefas.filter(t => t.concluida);
+      case 'Alta':  return tarefas.filter(t => t.prioridade === 'Alta'  && !t.concluida);
+      case 'Media': return tarefas.filter(t => t.prioridade === 'Media' && !t.concluida);
+      case 'Baixa': return tarefas.filter(t => t.prioridade === 'Baixa' && !t.concluida);
+      default: return tarefas;
+    }
+  }
+
+  function renderTarefas() {
+    const tarefas = filtrar(todasTarefas);
+    lista.innerHTML = '';
+
+    const total = todasTarefas.length;
+    const conc  = todasTarefas.filter(t => t.concluida).length;
+    const pct   = total ? Math.round((conc / total) * 100) : 0;
+
+    countTotal.textContent = total;
+    statusLbl.textContent  = `${tarefas.length} tarefa${tarefas.length !== 1 ? 's' : ''} exibida${tarefas.length !== 1 ? 's' : ''}`;
+    statusPct.textContent  = `${pct}% concluído`;
+    progressEl.style.width = pct + '%';
+
+    if (!tarefas.length) {
+      lista.innerHTML = `
+        <div class="empty">
+          <div class="empty-icon">${filtroAtivo === 'concluidas' ? '🏆' : '📋'}</div>
+          <h3>${filtroAtivo === 'concluidas' ? 'Nenhuma tarefa concluída ainda' : 'Nenhuma tarefa aqui'}</h3>
+          <p>${filtroAtivo === 'todas' ? 'Adicione sua primeira tarefa acima!' : 'Tente outro filtro.'}</p>
+        </div>`;
+      return;
+    }
+
+    tarefas.forEach(t => {
+      const prazoFmt = formatarPrazo(t.prazo);
+      const vencido  = !t.concluida && prazoVencido(t.prazo);
+
+      const item = document.createElement('div');
+      item.className = 'task-item' + (t.concluida ? ' concluida' : '') + (vencido ? ' vencida' : '');
+      item.innerHTML = `
+        <span class="pri-dot ${t.prioridade}"></span>
+        <span class="check-icon">
+          <svg viewBox="0 0 12 12" fill="none"><path d="M2 6l3 3 5-5" stroke="#fff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        </span>
+        <span class="task-title">${escHtml(t.titulo)}</span>
+        <span class="task-prazo">
+          ${prazoFmt && !vencido ? prazoFmt : ''}
+          ${vencido ? `<span class="prazo-vencido">⚠️ Vencida ${prazoFmt}</span>` : ''}
+        </span>
+        ${t.concluida
+          ? `<span class="badge-concluida">✓ Concluída</span>`
+          : `<span class="badge ${t.prioridade}">${t.prioridade}</span>`}
+        <div class="task-actions">
+          <button class="btn-sm concluir" data-id="${t.id}" ${t.concluida ? 'disabled' : ''}>✓ Concluir</button>
+          <button class="btn-sm editar"   data-id="${t.id}">✎ Editar</button>
+          <button class="btn-sm excluir"  data-id="${t.id}">🗑 Excluir</button>
+        </div>
+      `;
+
+      // linha de edição inline (oculta por padrão)
+      const editRow = document.createElement('div');
+      editRow.className = 'edit-row';
+      editRow.style.display = 'none';
+      editRow.innerHTML = `
+        <input class="inp-titulo" type="text"  value="${escHtml(t.titulo)}" maxlength="80">
+        <input class="inp-prazo"  type="date"  value="${t.prazo || ''}">
+        <select class="inp-prior">
+          <option value="Alta"  ${t.prioridade==='Alta'  ? 'selected':''}>Alta</option>
+          <option value="Media" ${t.prioridade==='Media' ? 'selected':''}>Média</option>
+          <option value="Baixa" ${t.prioridade==='Baixa' ? 'selected':''}>Baixa</option>
+        </select>
+        <button class="btn-salvar">Salvar</button>
+        <button class="btn-cancelar">Cancelar</button>
+      `;
+
+      item.querySelector('.concluir').addEventListener('click', function() { concluir(t.id, this); });
+      item.querySelector('.excluir').addEventListener('click',  function() { excluir(t.id, this); });
+      item.querySelector('.editar').addEventListener('click', function() {
+        const aberto = editRow.style.display !== 'none';
+        editRow.style.display = aberto ? 'none' : 'flex';
+      });
+      editRow.querySelector('.btn-cancelar').addEventListener('click', () => {
+        editRow.style.display = 'none';
+      });
+      editRow.querySelector('.btn-salvar').addEventListener('click', async function() {
+        const titulo = editRow.querySelector('.inp-titulo').value.trim();
+        const prazo  = editRow.querySelector('.inp-prazo').value;
+        const prior  = editRow.querySelector('.inp-prior').value;
+        if (!titulo) { toast('Informe o título.', 'err'); return; }
+        this.disabled = true;
+        this.textContent = '⏳ Salvando...';
+        await editar(t.id, titulo, prazo, prior, this);
+      });
+      lista.appendChild(item);
+      lista.appendChild(editRow);
+    });
+  }
+
+  function escHtml(str) {
+    return str.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+  }
+
+  async function carregar() {
+    try {
+      const res = await fetch(`${API}/tarefas`);
+      todasTarefas = await res.json();
+      renderTarefas();
+    } catch {
+      lista.innerHTML = '<div class="empty"><div class="empty-icon">⚠️</div><h3>Erro de conexão</h3><p>Verifique se o servidor está rodando.</p></div>';
+    }
+  }
+
+  async function adicionar() {
+    const titulo = inpTitulo.value.trim();
+    if (!titulo) { toast('Informe o título da tarefa.', 'err'); inpTitulo.focus(); return; }
+
+    btnAdd.disabled = true;
+    btnAdd.innerHTML = '<span>⏳</span> Adicionando...';
+
+    try {
+      const res = await fetch(`${API}/tarefas`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ titulo, prazo: inpPrazo.value || null, prioridade: inpPrior.value }),
+      });
+      if (!res.ok) throw new Error((await res.json()).erro);
+      inpTitulo.value = '';
+      inpPrazo.value  = '';
+      inpPrior.value  = 'Media';
+      toast('Tarefa adicionada com sucesso!');
+      await carregar();
+    } catch (e) {
+      toast('Erro: ' + e.message, 'err');
+    } finally {
+      btnAdd.disabled = false;
+      btnAdd.innerHTML = '<span>+</span> Adicionar Tarefa';
+    }
+  }
+
+  async function editar(id, titulo, prazo, prioridade, btn) {
+    if (!titulo) { toast('Informe o título.', 'err'); btn.disabled = false; btn.textContent = 'Salvar'; return; }
+    try {
+      const res = await fetch(`${API}/tarefas/${id}`, {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ titulo, prazo: prazo || null, prioridade }),
+      });
+      if (!res.ok) throw new Error((await res.json()).erro);
+      toast('Tarefa atualizada!');
+      await carregar();
+    } catch (e) {
+      toast('Erro: ' + e.message, 'err');
+      btn.disabled = false;
+      btn.textContent = 'Salvar';
+    }
+  }
+
+  async function concluir(id, btn) {
+    btn.disabled = true;
+    try {
+      const res = await fetch(`${API}/tarefas/${id}/concluir`, { method: 'PATCH' });
+      if (!res.ok) throw new Error((await res.json()).erro);
+      toast('Tarefa concluída! 🎉');
+      await carregar();
+    } catch (e) {
+      toast('Erro: ' + e.message, 'err');
+      btn.disabled = false;
+    }
+  }
+
+  async function excluir(id, btn) {
+    btn.disabled = true;
+    try {
+      const res = await fetch(`${API}/tarefas/${id}`, { method: 'DELETE' });
+      if (!res.ok) throw new Error((await res.json()).erro);
+      toast('Tarefa excluída.');
+      await carregar();
+    } catch (e) {
+      toast('Erro: ' + e.message, 'err');
+      btn.disabled = false;
+    }
+  }
+
+  btnAdd.addEventListener('click', adicionar);
+  inpTitulo.addEventListener('keydown', e => { if (e.key === 'Enter' && !btnAdd.disabled) adicionar(); });
+
+  carregar();
+</script>
+</body>
+</html>
